@@ -71,13 +71,13 @@ SHA::SHA()
     instr.SetDecode(
       (cmd == CMD_WRITE) & (cmdaddr >= SHA_LEN) & (cmdaddr < SHA_LEN + 2));
 
-    instr.SetUpdate(len,
+    instr.SetUpdate(oplen,
       Ite(is_status_idle, // Check if it is idle
           Concat(         // if idle, update one slice of the register at a time
-            Ite(cmdaddr == SHA_LEN + 1, cmddata, len(15,8) ), // the upper 8-bits
-            Ite(cmdaddr == SHA_LEN    , cmddata, len( 7,0) )  // the lower 8-bits
+            Ite(cmdaddr == SHA_LEN + 1, cmddata, oplen(15,8) ), // the upper 8-bits
+            Ite(cmdaddr == SHA_LEN    , cmddata, oplen( 7,0) )  // the lower 8-bits
           ),
-          len        // if not idle, no change
+          oplen        // if not idle, no change
         )); // update a slice of the register. Slice selected by the cmd address
 
   }
@@ -106,7 +106,7 @@ SHA::SHA()
     instr.SetDecode(
       (cmd == CMD_READ) & (cmdaddr >= SHA_LEN) & (cmdaddr < SHA_LEN + 2));
 
-    instr.SetUpdate(dataout, slice_read(len, cmdaddr, SHA_LEN, 2, 8));
+    instr.SetUpdate(dataout, slice_read(oplen, cmdaddr, SHA_LEN, 2, 8));
   }
 
  
@@ -117,7 +117,7 @@ SHA::SHA()
                     (cmddata == 1));
     // if it is idle, we will start, if it is not idle, there is no guarantee
     // what it may become
-    instr.SetUpdate(status, Ite(is_status_idle, BvConst(1, 2), unknown(2)()));
+    instr.SetUpdate(state, Ite(is_status_idle, BvConst(1, 2), unknown(2)()));
 
     // AddChild(instr);
   }

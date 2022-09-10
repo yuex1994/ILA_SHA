@@ -89,6 +89,7 @@ protected:
   ExprRef rdaddr;
   ExprRef wraddr;
   ExprRef oplen;
+  ExprRef dataout;
  
   // the memory
   ExprRef xram;
